@@ -20,49 +20,57 @@
 
 #### User Interface
 
-- **Modern Design**: Clean, minimalist UI with focus on readability and accessibility
-- **Fully Responsive**: Optimized for all devices (mobile, tablet, desktop)
-- **Elegant Animations**: Smooth transitions and loading states
-- **Focus Mode**: Background blur and dimming when viewing job details
-- **Interactive Components**: Hover effects and visual feedback for all interactive elements
+* **Modern Design**: Clean, minimalist UI with focus on readability and accessibility
+* **Fully Responsive**: Optimized for all devices (mobile, tablet, desktop)
+* **Elegant Animations**: Smooth transitions and loading states
+* **Focus Mode**: Background blur and dimming when viewing job details
+* **Interactive Components**: Hover effects and visual feedback for all interactive elements
 
 #### Performance Optimizations
 
-- **Efficient Data Handling**: Client-side filtering and sorting of 10,000+ jobs
-- **Optimized Rendering**: Proper pagination with intelligent page number display
-- **Loading Skeletons**: Realistic placeholders that match content layout during loading
-- **Lazy Loading**: Components load as needed for faster initial page loads
+* **Efficient Data Handling**: Client-side filtering and sorting of 10,000+ jobs
+* **Optimized Rendering**: Proper pagination with intelligent page number display
+* **Loading Skeletons**: Realistic placeholders that match content layout during loading
+* **Lazy Loading**: Components load as needed for faster initial page loads
 
 #### Advanced Functionality
 
-- **Powerful Search**: Filter jobs by location with real-time feedback
-- **Experience Filtering**: Sort jobs by required experience levels
-- **Pagination Controls**: Easy navigation through large result sets with first/prev/next/last buttons
-- **Job Detail Modal**: Focus-enhancing modal with backdrop blur effect
-- **Responsive Typography**: Font sizes adapt to different screen sizes
+* **Powerful Search**: Filter jobs by location with real-time feedback
+* **Experience Filtering**: Sort jobs by required experience levels
+* **Pagination Controls**: Easy navigation through large result sets with first/prev/next/last buttons
+* **Job Detail Modal**: Focus-enhancing modal with backdrop blur effect
+* **Responsive Typography**: Font sizes adapt to different screen sizes
 
 #### Error Handling & UX Improvements
 
-- **Intelligent Error States**: Different visualizations based on error type
-- **Network Status Detection**: Automatic reconnection attempts when network is available
-- **Retry Logic**: Exponential backoff for API request retries
-- **User-Friendly Error Messages**: Clear instructions on how to resolve common issues
+* **Intelligent Error States**: Different visualizations based on error type
+* **Network Status Detection**: Automatic reconnection attempts when network is available
+* **Retry Logic**: Exponential backoff for API request retries
+* **User-Friendly Error Messages**: Clear instructions on how to resolve common issues
 
 ### 🖥️ Backend Features
 
 #### API Endpoints
 
-- **Optimized Queries**: Efficient database operations for fast response times
-- **Flexible Pagination**: Configurable page size with metadata
-- **All-Results Option**: Special endpoint parameter to retrieve all jobs at once
-- **Location-Based Filtering**: Search by job location with case-insensitive matching
+* **Optimized Queries**: Efficient database operations for fast response times
+* **Flexible Pagination**: Configurable page size with metadata
+* **All-Results Option**: Special endpoint parameter to retrieve all jobs at once
+* **Location-Based Filtering**: Search by job location with case-insensitive matching
 
 #### Data Management
 
-- **Type Safety**: Full TypeScript implementation for robust code
-- **Schema Validation**: Mongoose models with proper field validation
-- **Error Handling**: Comprehensive error catching and reporting
-- **MongoDB Integration**: Efficient document queries and indexing
+* **Type Safety**: Full TypeScript implementation for robust code
+* **Schema Validation**: Mongoose models with proper field validation
+* **Error Handling**: Comprehensive error catching and reporting
+* **MongoDB Integration**: Efficient document queries and indexing
+
+---
+
+## 🌐 Live Demo
+
+| Frontend URL | [https://jobportal-1-ys19.onrender.com](https://jobportal-1-ys19.onrender.com) |
+| ------------ | ------------------------------------------------------------------------------ |
+| Backend URL  | [https://jobportal-m0lg.onrender.com](https://jobportal-m0lg.onrender.com)     |
 
 ---
 
@@ -102,8 +110,8 @@
 
 ### Prerequisites
 
-- Node.js (v14 or later)
-- MongoDB database (local or Atlas)
+* Node.js (v14 or later)
+* MongoDB database (local or Atlas)
 
 ### Setup and Installation
 
@@ -167,19 +175,19 @@
 
 ### Frontend
 
-- **Next.js**: React framework for production-grade applications
-- **TypeScript**: Type-safe JavaScript for better developer experience
-- **Tailwind CSS**: Utility-first CSS framework for rapid UI development
-- **Axios**: Promise-based HTTP client for API requests
-- **React Icons**: Icon components for React applications
+* **Next.js**: React framework for production-grade applications
+* **TypeScript**: Type-safe JavaScript for better developer experience
+* **Tailwind CSS**: Utility-first CSS framework for rapid UI development
+* **Axios**: Promise-based HTTP client for API requests
+* **React Icons**: Icon components for React applications
 
 ### Backend
 
-- **Node.js**: JavaScript runtime for server-side code
-- **Express.js**: Web framework for building APIs
-- **TypeScript**: Type safety across the entire stack
-- **MongoDB**: NoSQL database for storing job data
-- **Mongoose**: MongoDB object modeling for Node.js
+* **Node.js**: JavaScript runtime for server-side code
+* **Express.js**: Web framework for building APIs
+* **TypeScript**: Type safety across the entire stack
+* **MongoDB**: NoSQL database for storing job data
+* **Mongoose**: MongoDB object modeling for Node.js
 
 ---
 
@@ -187,30 +195,37 @@
 
 The application is fully responsive and optimized for:
 
-- **Mobile devices**: Compact layouts with touch-friendly controls
-- **Tablets**: Enhanced layouts with appropriate spacing
-- **Desktops**: Advanced filtering and detailed information display
-- **Large screens**: Multi-column display for efficient browsing
+* **Mobile devices**: Compact layouts with touch-friendly controls
+* **Tablets**: Enhanced layouts with appropriate spacing
+* **Desktops**: Advanced filtering and detailed information display
+* **Large screens**: Multi-column display for efficient browsing
 
 ---
 
 ## ✅ Advanced Features
 
-- **Skeleton Loading**: Realistic loading placeholders that match the layout
-- **Error Recovery**: Automatic retry logic for network failures
-- **Modal Animation**: Smooth entrance and exit animations with focus effects
-- **Pagination Optimization**: Smart pagination controls that adapt to screen size
-- **Performance Optimization**: Efficient rendering for large datasets
+* **Skeleton Loading**: Realistic loading placeholders that match the layout
+* **Error Recovery**: Automatic retry logic for network failures
+* **Modal Animation**: Smooth entrance and exit animations with focus effects
+* **Pagination Optimization**: Smart pagination controls that adapt to screen size
+* **Performance Optimization**: Efficient rendering for large datasets
 
 ---
 
-## 🔒 Future Enhancements
+## 🧩 Assumptions & Challenges
 
-- User authentication and saved job lists
-- Advanced filtering (salary, job category, company)
-- Job application tracking
-- Company profiles and verified listings
-- Email notifications for new job matches
+**Assumptions:**
+
+* Users will primarily search for jobs by **location** and **experience**.
+* Backend API performance will hold up under **10,000+ job entries** with current optimizations.
+* Future features like **user authentication** and **saved jobs** will require adding a database schema update and secure token handling.
+
+**Challenges Faced:**
+
+* **Pagination performance:** Handling large datasets smoothly required careful backend query optimization and frontend lazy loading to prevent UI freezes.
+* **Real-time search:** Ensuring responsive search on the frontend without hammering the backend too frequently — solved using debouncing.
+* **Responsive animations:** Balancing smooth animations with performance across devices, especially for older browsers.
+* **Deployment quirks:** Ensuring the Render-hosted backend and frontend communicate correctly across domains, including managing CORS and environment variables.
 
 ---
 
