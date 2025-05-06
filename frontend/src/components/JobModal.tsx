@@ -16,7 +16,7 @@ interface JobModalProps {
 }
 
 const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
-  // Add body class to prevent scrolling when modal is open
+  // Prevent body scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add("overflow-hidden");
@@ -30,29 +30,20 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
 
   if (!isOpen || !job) return null;
 
-  // Format posted date
+  // Format a date into a readable string (e.g., "May 5, 2025")
   const formatDate = (dateString?: string | { $date?: string }) => {
     if (!dateString) return "Recently posted";
 
     try {
-      // First try to parse ISO date string (e.g. "2023-05-15T00:00:00Z")
       let date: Date;
-
-      if (
-        typeof dateString === "object" &&
-        dateString !== null &&
-        "$date" in dateString
-      ) {
-        // Handle MongoDB date format
+      if (typeof dateString === "object" && "$date" in dateString) {
         date = new Date(dateString.$date as string);
       } else if (typeof dateString === "string") {
-        // Handle regular date string
         date = new Date(dateString);
       } else {
         return "Recently posted";
       }
 
-      // If we have an invalid date
       if (isNaN(date.getTime())) {
         return "Recently posted";
       }
@@ -67,14 +58,14 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
     }
   };
 
-  // Get company logo or default
+  // Use company logo or fallback to avatar
   const companyLogo =
     job.companyImageUrl ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
       job.company || "Company"
     )}&background=random&color=fff&size=150`;
 
-  // Experience text formatter
+  // Nicely format experience range
   const experienceText = () => {
     const minExp = job.min_exp;
     const maxExp = job.max_exp;
@@ -94,7 +85,7 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
         onClick={(e) => e.stopPropagation()}
         className="relative bg-white rounded-lg shadow-xl w-full max-w-lg md:max-w-xl max-h-[80vh] overflow-y-auto mx-4 animate-modalFadeIn"
       >
-        {/* Close button */}
+        {/* Close (X) button */}
         <button
           onClick={onClose}
           className="absolute right-4 top-4 text-gray-500 hover:text-gray-700 transition-colors duration-200 z-10"
@@ -104,15 +95,15 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
         </button>
 
         <div className="p-5 md:p-6">
-          {/* Company info & header */}
+          {/* Header: company logo and job title */}
           <div className="flex items-start mb-6">
             <div className="mr-4 flex-shrink-0">
               <div
                 className="w-14 h-14 md:w-16 md:h-16 rounded-lg bg-gray-100 border border-slate-200 relative overflow-hidden"
                 style={{
                   backgroundImage: `url(${companyLogo})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
                 }}
               />
             </div>
@@ -126,30 +117,42 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
             </div>
           </div>
 
-          {/* Job details */}
+          {/* Job metadata details */}
           <div className="bg-slate-50 p-4 rounded-lg mb-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {job.location && (
                 <div className="flex items-center text-sm font-bold text-gray-800">
-                  <FiMapPin className="mr-3 text-indigo-600 flex-shrink-0" size={18} />
+                  <FiMapPin
+                    className="mr-3 text-indigo-600 flex-shrink-0"
+                    size={18}
+                  />
                   <span>{job.location}</span>
                 </div>
               )}
 
               <div className="flex items-center text-sm font-bold text-gray-800">
-                <FiBriefcase className="mr-3 text-indigo-600 flex-shrink-0" size={18} />
+                <FiBriefcase
+                  className="mr-3 text-indigo-600 flex-shrink-0"
+                  size={18}
+                />
                 <span>
                   {job.employmentType || job.employment_type || "Full-time"}
                 </span>
               </div>
 
               <div className="flex items-center text-sm font-bold text-gray-800">
-                <FiClock className="mr-3 text-indigo-600 flex-shrink-0" size={18} />
+                <FiClock
+                  className="mr-3 text-indigo-600 flex-shrink-0"
+                  size={18}
+                />
                 <span>Experience: {experienceText()}</span>
               </div>
 
               <div className="flex items-center text-sm font-bold text-gray-800">
-                <FiCalendar className="mr-3 text-indigo-600 flex-shrink-0" size={18} />
+                <FiCalendar
+                  className="mr-3 text-indigo-600 flex-shrink-0"
+                  size={18}
+                />
                 <span>
                   Posted:{" "}
                   {formatDate(job.postedDate || job.postedDateTime?.$date)}
@@ -158,17 +161,19 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
             </div>
           </div>
 
-          {/* Job description if available */}
+          {/* Job description section */}
           {job.description && (
             <div className="mb-6">
-              <h3 className="text-md font-bold text-gray-900 mb-2">Job Description</h3>
+              <h3 className="text-md font-bold text-gray-900 mb-2">
+                Job Description
+              </h3>
               <p className="text-sm text-gray-700 leading-relaxed">
                 {job.description}
               </p>
             </div>
           )}
 
-          {/* Apply button */}
+          {/* Apply Now button */}
           <div className="flex justify-center mt-8">
             <a
               href={job.job_link || "#"}

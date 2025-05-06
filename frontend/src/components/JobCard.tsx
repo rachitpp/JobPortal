@@ -7,7 +7,7 @@ interface JobCardProps {
 }
 
 const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
-  // Format posted date to relative time (e.g., "2 days ago")
+  // Convert posted date to a friendly relative string (e.g., "2 days ago")
   const getRelativeTime = (dateString?: string) => {
     if (!dateString) return "Recently";
 
@@ -26,18 +26,18 @@ const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
     return `${Math.floor(diffInDays / 365)} year(s) ago`;
   };
 
-  // Get company logo or default
+  // Build the company logo URL or use a fallback avatar
   const companyLogo =
     job.companyImageUrl ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(
       job.company || "Company"
     )}&background=random&color=fff`;
 
-  // Get employment type in user-friendly format
+  // Normalize employment type from API data
   const employmentType =
     job.employmentType || job.employment_type || "Full-time";
 
-  // Get experience range in user-friendly format
+  // Format the experience range text nicely
   const experienceText = () => {
     const minExp = job.min_exp;
     const maxExp = job.max_exp;
@@ -56,15 +56,15 @@ const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
       className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 hover:shadow-lg hover:border-indigo-200 transition-all duration-300 cursor-pointer flex flex-col h-full"
       onClick={onClick}
     >
+      {/* Top section: logo and job title */}
       <div className="flex items-start mb-3">
         <div className="flex-shrink-0 mr-3">
-          {/* Using div with background image as fallback for next/image */}
-          <div 
+          <div
             className="w-12 h-12 rounded-lg bg-gray-100 border border-slate-200 relative overflow-hidden"
             style={{
               backgroundImage: `url(${companyLogo})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           />
         </div>
@@ -78,6 +78,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
         </div>
       </div>
 
+      {/* Middle section: job details */}
       <div className="space-y-2.5 mt-auto bg-slate-50 p-3 rounded-lg">
         {job.location && (
           <div className="flex items-center text-xs font-bold text-gray-800">
@@ -97,6 +98,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
         </div>
       </div>
 
+      {/* Bottom section: posted date and action button */}
       <div className="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center">
         <div className="flex items-center text-xs font-bold text-gray-800">
           <FiCalendar className="mr-1.5 text-indigo-600 flex-shrink-0" />

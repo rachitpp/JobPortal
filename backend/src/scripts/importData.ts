@@ -4,50 +4,41 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Job from "../models/Job";
 
-// Load environment variables
+// Load environment variables (like MongoDB URI)
 dotenv.config();
 
-// MongoDB Connection String
 const MONGO_URI = process.env.MONGO_URI || "";
 
-// Read JSON file
+// Main function to import job data into the database
 const importData = async (): Promise<void> => {
   try {
-    // Connect to MongoDB
     await mongoose.connect(MONGO_URI);
     console.log("MongoDB Connected");
 
-    // Path to the JSON file in the backend/src/data directory
+    // Build the path to the JSON file
     const jsonPath = path.join(__dirname, "../data/Jobs.json");
 
-    console.log("Looking for Jobs.json at:", jsonPath);
-
-    // Check if file exists
+    // Check if the file exists
     if (!fs.existsSync(jsonPath)) {
       console.error("Jobs.json file not found at:", jsonPath);
       process.exit(1);
     }
 
-    // Read and parse the JSON file
+    // Read and parse the job data
     const jsonData = JSON.parse(fs.readFileSync(jsonPath, "utf-8"));
-    console.log("JSON data loaded successfully");
 
-    // Delete existing data
+    // Clear any existing jobs before importing fresh data
     await Job.deleteMany({});
-    console.log("Existing jobs deleted");
+    console.log("Old jobs cleared");
 
-    // Use the data as is, without transformation
+    // Insert the new job entries
     const formattedData = Array.isArray(jsonData) ? jsonData : [];
-    console.log(`Processing ${formattedData.length} jobs`);
-
-    // Insert data
     await Job.insertMany(formattedData);
-    console.log(`${formattedData.length} jobs imported successfully`);
 
-    // Exit process
+    console.log(`${formattedData.length} jobs imported successfully`);
     process.exit(0);
   } catch (error) {
-    console.error("Error importing data:", error);
+    console.error("Import failed:", error);
     process.exit(1);
   }
 };

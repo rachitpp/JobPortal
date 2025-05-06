@@ -1,24 +1,24 @@
 import { Request, Response } from "express";
 import Job, { IJob } from "../models/Job";
 
-// Get all jobs or filter by location with pagination
+// Controller to get all jobs, with optional location filtering and pagination support
 export const getJobs = async (req: Request, res: Response): Promise<void> => {
   try {
     const { location, page = 1, limit = 20 } = req.query;
     let query = {};
 
-    // Filter by location if provided
+    // If a location is passed in the query, add a case-insensitive filter for it
     if (location) {
       query = { location: { $regex: location.toString(), $options: "i" } };
     }
 
-    // Check if all jobs are requested (limit=0 or limit=all)
+    // Check if the request is asking for all jobs (limit = 0 or 'all')
     const getAllJobs = limit.toString() === "0" || limit.toString() === "all";
 
-    // Get total count first (for pagination metadata)
+    // Get the total number of jobs matching the filter (useful for pagination info)
     const total = await Job.countDocuments(query);
 
-    // If all jobs are requested, skip pagination
+    // If all jobs are requested, skip pagination logic
     if (getAllJobs) {
       const allJobs = await Job.find(query).sort({ postedDate: -1 });
 
@@ -31,14 +31,14 @@ export const getJobs = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Calculate pagination for normal requests
+    // For normal paginated requests, figure out how many to skip and how many to return
     const pageNum = parseInt(page.toString(), 10);
     const limitNum = parseInt(limit.toString(), 10);
     const skip = (pageNum - 1) * limitNum;
 
-    // Get paginated jobs
+    // Fetch the jobs for the current page, sorted so the most recent ones come first
     const jobs = await Job.find(query)
-      .sort({ postedDate: -1 }) // Sort by posted date (newest first)
+      .sort({ postedDate: -1 })
       .skip(skip)
       .limit(limitNum);
 

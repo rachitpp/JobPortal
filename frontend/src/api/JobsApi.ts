@@ -1,10 +1,10 @@
 import { JobsResponse } from "../types/jobs";
 
-// API base URL - use environment variable or fallback to the deployed backend URL
+// Define the API base URL, using env variable or fallback to production
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://jobportal-m0lg.onrender.com";
 
-// Simple fetch function with better error handling
+// Generic fetch helper with timeout and error handling
 const fetchWithTimeout = async (
   url: string,
   options: RequestInit = {},
@@ -46,6 +46,7 @@ interface FetchJobsParams {
   location?: string;
 }
 
+// Core function to fetch jobs, supports pagination and location filtering
 export const fetchJobs = async (
   params: FetchJobsParams = {}
 ): Promise<JobsResponse> => {
@@ -55,19 +56,21 @@ export const fetchJobs = async (
     if (params.limit) queryParams.append("limit", params.limit.toString());
     if (params.location) queryParams.append("location", params.location);
 
-    // Use absolute URL with the API base URL
     const url = `${API_BASE_URL}/api/jobs${
       queryParams.toString() ? `?${queryParams.toString()}` : ""
     }`;
+
     console.log("Fetching jobs from:", url);
 
     const response = await fetchWithTimeout(url);
     const data = await response.json();
+
     console.log("Jobs data received:", {
       count: data.count,
       total: data.total,
       success: data.success,
     });
+
     return data;
   } catch (error) {
     console.error("Error fetching jobs:", error);
@@ -75,19 +78,19 @@ export const fetchJobs = async (
   }
 };
 
-// Kept for backward compatibility
+// Helper for default paginated fetch (used as fallback)
 export const fetchAllJobs = async (): Promise<JobsResponse> => {
   return fetchJobs({ limit: 20, page: 1 });
 };
 
-// Kept for backward compatibility
+// Helper to fetch jobs filtered by location (default page + limit)
 export const fetchJobsByLocation = async (
   location: string
 ): Promise<JobsResponse> => {
   return fetchJobs({ location, limit: 20, page: 1 });
 };
 
-// Fetch all jobs (10,000) at once without pagination
+// Fetch all jobs without any pagination limit (use carefully for large datasets)
 export const fetchAllJobsNoLimit = async (
   location?: string
 ): Promise<JobsResponse> => {

@@ -5,23 +5,22 @@ import connectDB from "./config/db";
 import jobRoutes from "./routes/jobs";
 import mongoose from "mongoose";
 
-// Load environment variables
+// Load environment variables from .env
 dotenv.config();
 
 const app: Express = express();
-const PORT = parseInt(process.env.PORT || "5000", 10); // ✅ ensure PORT is a number
+const PORT = parseInt(process.env.PORT || "5000", 10);
 
-// Environment variables
 const NODE_ENV = process.env.NODE_ENV || "development";
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
-// Middleware
+// Setup middleware
 app.use(express.json());
 
-// CORS configuration - Allow all origins for now to troubleshoot
+// Configure CORS (currently open to all origins for testing)
 app.use(
   cors({
-    origin: "*", // Allow all origins
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
       "Content-Type",
@@ -33,7 +32,7 @@ app.use(
   })
 );
 
-// Root endpoint
+// Root endpoint for a basic API status message
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "JobHub API is running",
@@ -43,7 +42,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Health check endpoint
+// Health check endpoint to monitor app and DB status
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "ok",
@@ -53,10 +52,10 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Routes
+// Job routes
 app.use("/api/jobs", jobRoutes);
 
-// Error handling middleware
+// Global error handler
 app.use(
   (
     err: any,
@@ -73,13 +72,12 @@ app.use(
   }
 );
 
-// Start server
+// Start the server
 const startServer = async () => {
   try {
-    // Connect to MongoDB
     await connectDB();
 
-    // ✅ IMPORTANT: Bind to 0.0.0.0 for Render
+    // For platforms like Render, bind to 0.0.0.0
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`✅ Server running in ${NODE_ENV} mode on port ${PORT}`);
       console.log(

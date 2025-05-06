@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// Define the interface for the Job document
+// Define the TypeScript interface for a Job document
+// This helps give type safety when working with jobs in the code
 export interface IJob extends Document {
   "Job ID (Numeric)"?: string;
   title?: string;
@@ -21,10 +22,10 @@ export interface IJob extends Document {
   min_exp?: number;
   max_exp?: number;
   postedDate?: Date;
-  [key: string]: any; // Allow any additional fields
+  [key: string]: any; // Let’s allow any extra fields not explicitly listed
 }
 
-// Create the Job schema
+// Define the Mongoose schema for the Job collection
 const JobSchema: Schema = new Schema(
   {
     "Job ID (Numeric)": { type: String },
@@ -48,9 +49,10 @@ const JobSchema: Schema = new Schema(
     postedDate: { type: Date },
   },
   {
-    strict: false, // Allow additional fields not defined in schema
+    // This tells Mongoose to allow saving extra fields not defined here
+    strict: false,
   }
 );
 
-// Export the Job model
+// Finally, export the Job model so we can use it elsewhere in the app
 export default mongoose.model<IJob>("Job", JobSchema);
