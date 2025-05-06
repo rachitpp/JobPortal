@@ -215,5 +215,5 @@ The application is fully responsive and optimized for:
 ---
 
 <p align="center">
-  Made with ❤️ by Your Name
+  Made with ❤️ by Rachit Panwar
 </p>
