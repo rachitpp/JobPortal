@@ -2,7 +2,7 @@ import { JobsResponse } from "../types/jobs";
 
 // API base URL - use environment variable or fallback to the deployed backend URL
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://jobhub-7scy.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://jobportal-m0lg.onrender.com";
 
 // Simple fetch function with better error handling
 const fetchWithTimeout = async (
