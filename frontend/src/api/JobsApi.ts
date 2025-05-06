@@ -8,7 +8,7 @@ const API_BASE_URL =
 const fetchWithTimeout = async (
   url: string,
   options: RequestInit = {},
-  timeout = 10000
+  timeout = 15000
 ) => {
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
@@ -20,26 +20,18 @@ const fetchWithTimeout = async (
       signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
+        ...(options.headers || {}),
       },
       mode: "cors",
-      credentials: "omit",
     });
+
     clearTimeout(id);
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Response not OK:", {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText,
-      });
-      throw new Error(
-        `HTTP error! status: ${response.status}, message: ${errorText}`
-      );
+      console.error(`API error: ${response.status} ${response.statusText}`);
+      throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
 
-    console.log("Response status:", response.status);
     return response;
   } catch (error) {
     clearTimeout(id);
