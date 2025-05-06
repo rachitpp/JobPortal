@@ -1,5 +1,5 @@
 import React from "react";
-import { Job } from "../types/job";
+import { Job } from "../types/jobs";
 
 interface JobDetailsProps {
   job: Job | null;
