@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 dotenv.config();
 
 const app: Express = express();
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT || "5000", 10); // ✅ ensure PORT is a number
 
 // Environment variables
 const NODE_ENV = process.env.NODE_ENV || "development";
@@ -23,7 +23,12 @@ app.use(
   cors({
     origin: "*", // Allow all origins
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "Accept", "x-nextjs-data"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Accept",
+      "x-nextjs-data",
+    ],
     credentials: true,
   })
 );
@@ -74,16 +79,17 @@ const startServer = async () => {
     // Connect to MongoDB
     await connectDB();
 
-    app.listen(PORT, () => {
-      console.log(`Server running in ${NODE_ENV} mode on port ${PORT}`);
+    // ✅ IMPORTANT: Bind to 0.0.0.0 for Render
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`✅ Server running in ${NODE_ENV} mode on port ${PORT}`);
       console.log(
-        `MongoDB connection status: ${
+        `✅ MongoDB connection status: ${
           mongoose.connection.readyState === 1 ? "connected" : "disconnected"
         }`
       );
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
+    console.error("❌ Failed to start server:", error);
     process.exit(1);
   }
 };
