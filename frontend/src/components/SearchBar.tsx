@@ -43,8 +43,11 @@ const SearchBar: React.FC<SearchBarProps> = ({
       clearTimeout(timeoutRef.current);
     }
 
-    // Only trigger search if query has a minimum length or is empty (for reset)
-    if (searchQuery !== debouncedQuery) {
+    // Only trigger search if query is empty (to show all jobs) or has at least 3 characters
+    if (
+      searchQuery !== debouncedQuery &&
+      (searchQuery.length === 0 || searchQuery.length >= 3)
+    ) {
       timeoutRef.current = setTimeout(() => {
         setDebouncedQuery(searchQuery);
         onSearch(searchQuery);
