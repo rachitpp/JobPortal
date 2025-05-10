@@ -17,6 +17,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [isFocused, setIsFocused] = useState<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const initialRenderRef = useRef(true);
 
   // Clean up the timeout when the component unmounts
   useEffect(() => {
@@ -26,6 +27,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
       }
     };
   }, []);
+
+  // Trigger initial search when component mounts
+  useEffect(() => {
+    if (initialRenderRef.current) {
+      initialRenderRef.current = false;
+      onSearch(initialValue);
+    }
+  }, [initialValue, onSearch]);
 
   // Effect to handle the debounced search
   useEffect(() => {
@@ -98,14 +107,6 @@ const SearchBar: React.FC<SearchBarProps> = ({
           </button>
         )}
       </div>
-      <button
-        className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md sm:rounded-l-none sm:rounded-r-md px-4 py-2.5 transition-colors duration-200 text-sm w-full sm:w-auto flex items-center justify-center"
-        onClick={() => onSearch(searchQuery)}
-        aria-label="Search jobs"
-      >
-        <FiSearch size={16} className="mr-1.5" />
-        <span>Search</span>
-      </button>
     </div>
   );
 };
