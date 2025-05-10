@@ -1,43 +1,112 @@
-import { useState } from "react";
-import { FiSearch } from "react-icons/fi";
+import { useState, useEffect, useRef } from "react";
+import { FiSearch, FiMapPin } from "react-icons/fi";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
   initialValue?: string;
+  debounceTime?: number;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
   initialValue = "",
+  debounceTime = 500, // Default debounce time of 500ms
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>(initialValue);
+  const [debouncedQuery, setDebouncedQuery] = useState<string>(initialValue);
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(searchQuery);
+  // Clean up the timeout when the component unmounts
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Effect to handle the debounced search
+  useEffect(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Only trigger search if query has a minimum length or is empty (for reset)
+    if (searchQuery !== debouncedQuery) {
+      timeoutRef.current = setTimeout(() => {
+        setDebouncedQuery(searchQuery);
+        onSearch(searchQuery);
+        timeoutRef.current = null;
+      }, debounceTime);
+    }
+  }, [searchQuery, debounceTime, onSearch, debouncedQuery]);
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setDebouncedQuery("");
+    onSearch("");
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="relative max-w-2xl mx-auto">
-      <div className="flex items-center border-2 border-indigo-300 bg-white rounded-md overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-        <div className="pl-3 pr-2 text-indigo-500">
-          <FiSearch size={18} />
+    <div className="flex flex-col sm:flex-row items-center w-full">
+      <div
+        className={`relative flex-grow w-full mb-2 sm:mb-0 ${
+          isFocused
+            ? "ring-2 ring-blue-300 rounded-md sm:rounded-r-none sm:rounded-l-md"
+            : ""
+        }`}
+      >
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+          <FiMapPin size={16} className={isFocused ? "text-blue-500" : ""} />
         </div>
         <input
+          ref={inputRef}
           type="text"
-          placeholder="Search jobs by location (e.g., New York, Remote)"
-          className="w-full py-2 px-2 text-gray-800 text-sm font-medium focus:outline-none placeholder-gray-400"
+          placeholder="Enter job location..."
+          className="w-full py-2.5 px-4 pl-9 text-gray-800 bg-white rounded-md sm:rounded-r-none sm:rounded-l-md focus:outline-none text-sm font-medium border-0"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
         />
-        <button
-          type="submit"
-          className="bg-indigo-600 text-white px-4 py-2 text-sm font-semibold hover:bg-indigo-700 transition-colors duration-300 h-full"
-        >
-          Search
-        </button>
+        {searchQuery && (
+          <button
+            onClick={handleClearSearch}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none p-1"
+            aria-label="Clear search"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        )}
       </div>
-    </form>
+      <button
+        className="bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md sm:rounded-l-none sm:rounded-r-md px-4 py-2.5 transition-colors duration-200 text-sm w-full sm:w-auto flex items-center justify-center"
+        onClick={() => onSearch(searchQuery)}
+        aria-label="Search jobs"
+      >
+        <FiSearch size={16} className="mr-1.5" />
+        <span>Search</span>
+      </button>
+    </div>
   );
 };
 

@@ -11,7 +11,10 @@ const fetchWithTimeout = async (
   timeout = 15000
 ) => {
   const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
+  const timeoutId = setTimeout(
+    () => controller.abort("Request timeout"),
+    timeout
+  );
 
   try {
     console.log("Making request to:", url);
@@ -25,7 +28,7 @@ const fetchWithTimeout = async (
       mode: "cors",
     });
 
-    clearTimeout(id);
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       console.error(`API error: ${response.status} ${response.statusText}`);
@@ -34,7 +37,14 @@ const fetchWithTimeout = async (
 
     return response;
   } catch (error) {
-    clearTimeout(id);
+    clearTimeout(timeoutId);
+
+    // Check if the error is due to an aborted request
+    if (error instanceof DOMException && error.name === "AbortError") {
+      console.log("Request was aborted", url);
+      throw new Error("Request was cancelled");
+    }
+
     console.error("Fetch error:", error);
     throw error;
   }
@@ -73,6 +83,23 @@ export const fetchJobs = async (
 
     return data;
   } catch (error) {
+    if (error instanceof Error && error.message === "Request was cancelled") {
+      // Return empty result for cancelled requests
+      console.log("Returning empty result for cancelled request");
+      return {
+        success: true,
+        count: 0,
+        total: 0,
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          pageSize: 20,
+          totalItems: 0,
+        },
+        data: [],
+      };
+    }
+
     console.error("Error fetching jobs:", error);
     throw error;
   }
