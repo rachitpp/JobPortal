@@ -58,7 +58,7 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
 
       return new Intl.DateTimeFormat("en-US", {
         year: "numeric",
-        month: "long",
+        month: "short",
         day: "numeric",
       }).format(date);
     } catch {
@@ -125,58 +125,111 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
     }
   };
 
+  const handleModalClose = (e: React.MouseEvent) => {
+    // Call the onClose function passed from props
+    onClose();
+  };
+
+  const handleContentClick = (e: React.MouseEvent) => {
+    // Prevent clicks inside the modal from closing it
+    e.stopPropagation();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto backdrop-blur-sm bg-gray-800/70 flex items-center justify-center p-2 sm:p-4 transition-all duration-300">
+    <div
+      className="fixed inset-0 z-50 overflow-y-auto backdrop-blur-sm bg-gray-800/70 flex items-center justify-center p-2 sm:p-4 transition-all duration-300"
+      onClick={handleModalClose}
+    >
       <div
-        onClick={(e) => e.stopPropagation()}
-        className={`relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[95vh] overflow-y-auto mx-2 sm:mx-4 transform transition-all duration-300 ${
+        onClick={handleContentClick}
+        className={`relative bg-white rounded-lg shadow-lg w-full max-w-xl max-h-[85vh] overflow-y-auto mx-2 sm:mx-4 transform transition-all duration-300 ${
           animateIn ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
         }`}
       >
         {/* Close (X) button */}
         <button
-          onClick={onClose}
-          className="absolute right-3 top-3 sm:right-4 sm:top-4 text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1.5 sm:p-2 rounded-full transition-colors duration-200 z-10"
-          aria-label="Close"
+          onClick={handleModalClose}
+          className="absolute right-2 top-2 text-gray-500 hover:text-gray-800 hover:bg-gray-100 p-1.5 rounded-full transition-colors duration-200 z-10 flex items-center justify-center cursor-pointer bg-white/80 shadow-sm"
+          aria-label="Close modal"
         >
           <FiX size={18} />
         </button>
 
-        {/* Company banner/header with gradient */}
-        <div className="bg-gradient-to-r from-indigo-600 to-indigo-800 p-4 sm:p-6 rounded-t-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-r from-black/20 to-transparent"></div>
-          <div className="relative z-10 flex items-center">
-            <div className="mr-3 sm:mr-4 flex-shrink-0">
-              <div
-                className="w-14 h-14 sm:w-16 sm:h-16 rounded-lg bg-white shadow-md border-2 border-white relative overflow-hidden"
-                style={{
-                  backgroundImage: `url(${companyLogo})`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }}
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h2 className="text-lg sm:text-xl font-bold text-white mb-1 line-clamp-2">
-                {job.title || "Untitled Position"}
-              </h2>
-              <p className="text-indigo-100 font-medium text-sm sm:text-base">
-                {job.company || "Unknown Company"}
-              </p>
-            </div>
+        {/* Header with company info */}
+        <div className="bg-white border-b border-gray-100 p-3 sm:p-4 flex items-center">
+          <div className="mr-3 flex-shrink-0">
+            <div
+              className="w-10 h-10 rounded-md bg-white shadow-sm border border-gray-200 relative overflow-hidden"
+              style={{
+                backgroundImage: `url(${companyLogo})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              }}
+            />
+          </div>
+          <div className="flex-1 min-w-0 pr-8">
+            <h2 className="text-base font-bold text-gray-900 mb-0.5 line-clamp-1">
+              {job.title || "Untitled Position"}
+            </h2>
+            <p className="text-xs text-gray-600 font-medium">
+              {job.company || "Unknown Company"}
+            </p>
           </div>
         </div>
 
-        <div className="p-4 sm:p-6">
-          {/* Action buttons */}
-          <div className="flex mb-5 sm:mb-6 gap-2">
+        <div className="p-3 sm:p-4">
+          {/* Job metadata in a compact grid */}
+          <div className="bg-gray-50 p-2.5 rounded-md mb-3 border border-gray-100 grid grid-cols-2 gap-2 text-xs">
+            {job.location && (
+              <div className="flex items-center text-gray-700">
+                <FiMapPin
+                  className="mr-1.5 text-blue-500 flex-shrink-0"
+                  size={12}
+                />
+                <span className="truncate">{job.location}</span>
+              </div>
+            )}
+
+            <div className="flex items-center text-gray-700">
+              <FiBriefcase
+                className="mr-1.5 text-blue-500 flex-shrink-0"
+                size={12}
+              />
+              <span
+                className={`px-1.5 py-0.5 rounded-full text-2xs font-medium ${getBadgeColor()}`}
+              >
+                {job.employmentType || job.employment_type || "Full-time"}
+              </span>
+            </div>
+
+            <div className="flex items-center text-gray-700">
+              <FiClock
+                className="mr-1.5 text-blue-500 flex-shrink-0"
+                size={12}
+              />
+              <span>{experienceText()}</span>
+            </div>
+
+            <div className="flex items-center text-gray-700">
+              <FiCalendar
+                className="mr-1.5 text-blue-500 flex-shrink-0"
+                size={12}
+              />
+              <span>
+                {formatDate(job.postedDate || job.postedDateTime?.$date)}
+              </span>
+            </div>
+          </div>
+
+          {/* Action buttons in a more compact row */}
+          <div className="flex mb-3 gap-2">
             <a
               href={job.job_link || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className={`flex-1 flex items-center justify-center px-3 sm:px-4 py-2.5 sm:py-3 text-white font-medium text-sm sm:text-base rounded-md transition-colors ${
+              className={`flex-1 flex items-center justify-center px-3 py-2 text-white font-medium text-xs rounded-md transition-colors ${
                 job.job_link
-                  ? "bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800"
+                  ? "bg-blue-600 hover:bg-blue-700"
                   : "bg-gray-400 cursor-not-allowed"
               }`}
               onClick={(e) => {
@@ -185,82 +238,40 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
                 }
               }}
             >
-              <FiExternalLink className="mr-1.5 sm:mr-2" />
+              <FiExternalLink className="mr-1.5" size={14} />
               Apply Now
             </a>
             <button
               onClick={handleSaveJob}
-              className={`p-2.5 sm:p-3 rounded-md border ${
+              className={`p-2 rounded-md border ${
                 isSaved
                   ? "bg-amber-50 text-amber-600 border-amber-200"
-                  : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 active:bg-gray-100"
+                  : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
               } transition-colors`}
               aria-label="Save job"
             >
               <FiBookmark
-                size={18}
+                size={14}
                 className={isSaved ? "fill-amber-500" : ""}
               />
             </button>
             <button
               onClick={handleShare}
-              className="p-2.5 sm:p-3 rounded-md bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              className="p-2 rounded-md bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors"
               aria-label="Share job"
             >
-              <FiShare2 size={18} />
+              <FiShare2 size={14} />
             </button>
-          </div>
-
-          {/* Job metadata details */}
-          <div className="bg-indigo-50 p-3 sm:p-4 rounded-lg mb-5 sm:mb-6 border border-indigo-100">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {job.location && (
-                <div className="flex items-center text-xs sm:text-sm font-medium text-gray-800">
-                  <div className="mr-2.5 sm:mr-3 bg-indigo-100 p-1.5 sm:p-2 rounded-full text-indigo-600">
-                    <FiMapPin size={14} />
-                  </div>
-                  <span>{job.location}</span>
-                </div>
-              )}
-
-              <div className="flex items-center text-xs sm:text-sm font-medium text-gray-800">
-                <div className="mr-2.5 sm:mr-3 bg-indigo-100 p-1.5 sm:p-2 rounded-full text-indigo-600">
-                  <FiBriefcase size={14} />
-                </div>
-                <span
-                  className={`px-2 py-0.5 rounded-full text-2xs sm:text-xs font-medium ${getBadgeColor()}`}
-                >
-                  {job.employmentType || job.employment_type || "Full-time"}
-                </span>
-              </div>
-
-              <div className="flex items-center text-xs sm:text-sm font-medium text-gray-800">
-                <div className="mr-2.5 sm:mr-3 bg-indigo-100 p-1.5 sm:p-2 rounded-full text-indigo-600">
-                  <FiClock size={14} />
-                </div>
-                <span>Experience: {experienceText()}</span>
-              </div>
-
-              <div className="flex items-center text-xs sm:text-sm font-medium text-gray-800">
-                <div className="mr-2.5 sm:mr-3 bg-indigo-100 p-1.5 sm:p-2 rounded-full text-indigo-600">
-                  <FiCalendar size={14} />
-                </div>
-                <span>
-                  Posted:{" "}
-                  {formatDate(job.postedDate || job.postedDateTime?.$date)}
-                </span>
-              </div>
-            </div>
           </div>
 
           {/* Job description section */}
           {job.description && (
-            <div className="mb-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
-                <span className="bg-indigo-100 w-1.5 h-6 rounded-full mr-2 inline-block"></span>
+            <div>
+              <h3 className="text-sm font-bold text-gray-900 mb-2 flex items-center">
+                <span className="bg-blue-500 w-1 h-4 rounded-full mr-1.5 inline-block"></span>
                 Job Description
               </h3>
-              <div className="text-sm text-gray-700 leading-relaxed space-y-2 pl-4">
+              <div className="text-xs text-gray-700 leading-relaxed space-y-1.5 pl-2.5 pr-1 max-h-60 overflow-y-auto">
                 {job.description.split("\n").map((paragraph, index) => (
                   <p key={index}>{paragraph}</p>
                 ))}
@@ -268,9 +279,9 @@ const JobModal: React.FC<JobModalProps> = ({ isOpen, onClose, job }) => {
             </div>
           )}
 
-          {/* Source and disclaimer */}
+          {/* Source info */}
           {job.source && (
-            <div className="mt-6 pt-4 border-t border-gray-200 text-xs text-gray-500">
+            <div className="mt-3 pt-2 border-t border-gray-100 text-2xs text-gray-500">
               <p>Source: {job.source}</p>
             </div>
           )}

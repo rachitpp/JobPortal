@@ -67,10 +67,15 @@ const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
     return "bg-gray-100 text-gray-700";
   };
 
+  const handleJobClick = (e: React.MouseEvent) => {
+    // Call the onClick function passed from props
+    onClick();
+  };
+
   return (
     <div
       className="bg-white rounded-xl border border-slate-200 p-3.5 sm:p-5 hover:shadow-md hover:border-indigo-300 transition-all duration-300 cursor-pointer flex flex-col h-full group active:bg-slate-50"
-      onClick={onClick}
+      onClick={handleJobClick}
     >
       {/* Top section: logo and job title */}
       <div className="flex items-start mb-3 sm:mb-4">

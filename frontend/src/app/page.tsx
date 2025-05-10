@@ -515,6 +515,13 @@ export default function Home() {
           </p>
         </div>
       </footer>
+
+      {/* Job Modal */}
+      <JobModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        job={selectedJob}
+      />
     </main>
   );
 }
