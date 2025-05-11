@@ -25,7 +25,7 @@ export default function Home() {
     // If there's already an active request, skip this one
     if (activeRequestRef.current) {
       console.log("Skipping request because there's already an active one");
-      return;
+      return Promise.resolve(); // Return resolved promise when skipping
     }
 
     try {
@@ -44,12 +44,14 @@ export default function Home() {
       setJobs(response.data);
       setTotalPages(Math.ceil(response.total / 20) || 1);
       setTotalJobs(response.total || 0);
+      return Promise.resolve(response); // Return successful response
     } catch (err) {
       console.error("Error loading jobs:", err);
       // Don't show error message for aborted requests
       if (err instanceof Error && err.message !== "Request was cancelled") {
         setError(err instanceof Error ? err.message : "Failed to load jobs");
       }
+      return Promise.reject(err); // Return rejected promise for retry mechanism
     } finally {
       setLoading(false);
       activeRequestRef.current = false;
@@ -58,10 +60,25 @@ export default function Home() {
 
   // Use a more controlled approach for API calls
   useEffect(() => {
-    const timer = setTimeout(() => {
-      loadJobs(currentPage, searchLocation);
-    }, 100); // Small delay to allow for rapid page changes
+    let retryCount = 0;
+    const maxRetries = 3;
 
+    const attemptLoad = () => {
+      const timer = setTimeout(() => {
+        loadJobs(currentPage, searchLocation).catch((error) => {
+          console.error("Failed to load jobs:", error);
+          if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`Retrying job fetch (${retryCount}/${maxRetries})...`);
+            attemptLoad(); // Retry with increasing delay
+          }
+        });
+      }, 100 * Math.pow(2, retryCount)); // Exponential backoff
+
+      return timer;
+    };
+
+    const timer = attemptLoad();
     return () => clearTimeout(timer);
   }, [currentPage, searchLocation]);
 

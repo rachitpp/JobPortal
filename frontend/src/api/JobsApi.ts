@@ -8,7 +8,7 @@ const API_BASE_URL =
 const fetchWithTimeout = async (
   url: string,
   options: RequestInit = {},
-  timeout = 15000
+  timeout = 30000 // Increased timeout from 15s to 30s to accommodate cold starts
 ) => {
   const controller = new AbortController();
   const timeoutId = setTimeout(
@@ -26,6 +26,7 @@ const fetchWithTimeout = async (
         ...(options.headers || {}),
       },
       mode: "cors",
+      cache: "no-store", // Disable caching to ensure fresh data
     });
 
     clearTimeout(timeoutId);
